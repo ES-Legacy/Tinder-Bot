@@ -8,6 +8,7 @@ class TinderBot():
     def __init__(self):
         self.browser = webdriver.Firefox()
     
+    # Anytime that sleep() is envoked is simply due to latency conflict. Sometimes the page might not finish loading and be able to process the next step, sleep lets our app maintain flow of automated steps and NOT break.
     def login(self):
         self.browser.get("https://www.tinder.com")
 
@@ -21,8 +22,9 @@ class TinderBot():
 
         baseWindow = self.browser.window_handles[0]
 
-        #switch to facebook login window
         sleep(3)
+
+        #switch to facebook login window
         self.browser.switch_to.window(self.browser.window_handles[1])
         
         facebookUsername = self.browser.find_element(By.XPATH, '//*[@id="email"]')
