@@ -6,7 +6,14 @@ import creds
 
 class TinderBot():
     def __init__(self):
-        self.browser = webdriver.Firefox()
+        self.firefoxOptions = webdriver.FirefoxOptions()
+        self.firefoxOptions.set_preference("geo.prompt.testing", True)
+        self.firefoxOptions.set_preference("geo.prompt.testing.allow", True)
+        self.firefoxOptions.set_preference('geo.wifi.uri', 'data:application/json,{"location": {"lat": ' + creds.latitude + ', "lng": ' + creds.longitude + ', "accuracy": 2000}')
+        self.firefoxOptions.set_preference('dom.webnotifications.enabled', False)
+
+
+        self.browser = webdriver.Firefox(options=self.firefoxOptions)
     
     # Anytime that sleep() is envoked is simply due to latency conflict. Sometimes the page might not finish loading and be able to process the next step, sleep lets our app maintain flow of automated steps and NOT break.
     def login(self):
@@ -36,16 +43,16 @@ class TinderBot():
         facebookLoginButton = self.browser.find_element(By.ID, 'loginbutton')
 
         facebookLoginButton.click()
+        
+        #this switches us back to the base window, rather the tinder webpage
+        self.browser.switch_to.window(baseWindow)
+    
+    def handleAllowLocation(self):
+        sleep(5)
+        locationAllowButton = bot.browser.find_element(By.XPATH, '/html/body/div[2]/main/div/div/div/div[3]/button[1]')
+        locationAllowButton.click()
+
 
 bot = TinderBot()
 bot.login()
-
-
-
-        
-
-
-
-    
-            
-
+bot.handleAllowLocation()
