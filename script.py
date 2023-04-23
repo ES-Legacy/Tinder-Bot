@@ -14,6 +14,8 @@ class TinderBot():
 
 
         self.browser = webdriver.Firefox(options=self.firefoxOptions)
+
+        self.likeCount = 0
     
     # Anytime that sleep() is envoked is simply due to latency conflict. Sometimes the page might not finish loading and be able to process the next step, sleep lets our app maintain flow of automated steps and NOT break.
     def login(self):
@@ -29,7 +31,7 @@ class TinderBot():
 
         baseWindow = self.browser.window_handles[0]
 
-        sleep(3)
+        sleep(10)
 
         #switch to facebook login window
         self.browser.switch_to.window(self.browser.window_handles[1])
@@ -48,11 +50,60 @@ class TinderBot():
         self.browser.switch_to.window(baseWindow)
     
     def handleAllowLocation(self):
-        sleep(5)
-        locationAllowButton = bot.browser.find_element(By.XPATH, '/html/body/div[2]/main/div/div/div/div[3]/button[1]')
+        sleep(10)
+        locationAllowButton = self.browser.find_element(By.XPATH, '/html/body/div[2]/main/div/div/div/div[3]/button[1]')
         locationAllowButton.click()
+
+    def handleDenyCookies(self):
+        sleep(2)
+        cookiesDeclineButton = self.browser.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div/div/div[1]/div[2]/button')
+        cookiesDeclineButton.click()
+
+    def exitSession(self):
+        self.browser.quit()
+
+
+    def likePeople(self):
+
+        sleep(3)
+
+        if (self.likeCount % 2 == 0):
+            likeButton = self.browser.find_element(By.XPATH, '/html/body/div[1]/div/div[1]/div/main/div[1]/div/div/div[1]/div[1]/div/div[3]/div/div[4]/button')
+            
+
+        elif (self.likeCount % 2 == 1):
+            likeButton = self.browser.find_element(By.XPATH, '/html/body/div[1]/div/div[1]/div/main/div[1]/div/div/div[1]/div[1]/div/div[4]/div/div[4]/button')
+            
+        self.likeCount += 1
+
+        likeButton.click()
+
+    def handleFirstMessage(self):
+        messageInput = self.browser.find_element(By.XPATH, '//*[@id="o1134847748"]') #verified as unique
+        messageInput.send_keys("I'd take you out to the movies, but they don't let you bring snacks!")
+
+        submitButton = self.browser.find_element(By.XPATH, '/html/body/div[1]/div/div[1]/div/main/div[2]/main/div/div[1]/div/div[3]/div[3]/form/button')
+        submitButton.click()
+
+
+    #need to find a better way to determine how long to keep this going, the interruption will likely either be 1 of 3 things... An Ad, Max Likes Reached, or "reveal a like" thing that sometimes occurs
+    def handleLikeAndMatch(self):
+
+        while(True):
+            if (self.browser.find_elements(By.XPATH, '//*[@id="o1134847748"]') != []):
+                print("in loop")
+                self.handleFirstMessage()
+
+            else:
+                print("calling likePeople")
+                self.likePeople()
+
 
 
 bot = TinderBot()
 bot.login()
 bot.handleAllowLocation()
+bot.handleDenyCookies()
+bot.handleLikeAndMatch()
+
+#bot.exitSession()
