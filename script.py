@@ -65,20 +65,18 @@ class TinderBot():
 
     def likePeople(self):
 
-        sleep(3)
+        sleep(2)
 
-        if (self.likeCount % 2 == 0):
-            likeButton = self.browser.find_element(By.XPATH, '/html/body/div[1]/div/div[1]/div/main/div[1]/div/div/div[1]/div[1]/div/div[3]/div/div[4]/button')
-            
-
-        elif (self.likeCount % 2 == 1):
-            likeButton = self.browser.find_element(By.XPATH, '/html/body/div[1]/div/div[1]/div/main/div[1]/div/div/div[1]/div[1]/div/div[4]/div/div[4]/button')
+        likeButton = self.browser.find_element(By.CSS_SELECTOR, '.Bgi\(\$g-ds-background-like\)\:a')
             
         self.likeCount += 1
 
         likeButton.click()
 
     def handleFirstMessage(self):
+
+        sleep(2)
+        
         messageInput = self.browser.find_element(By.XPATH, '//*[@id="o1134847748"]') #verified as unique
         messageInput.send_keys("I'd take you out to the movies, but they don't let you bring snacks!")
 
@@ -90,13 +88,12 @@ class TinderBot():
     def handleLikeAndMatch(self):
 
         while(True):
-            if (self.browser.find_elements(By.XPATH, '//*[@id="o1134847748"]') != []):
-                print("in loop")
-                self.handleFirstMessage()
-
-            else:
+            if (self.browser.find_elements(By.CSS_SELECTOR, '.Bgi\(\$g-ds-background-like\)\:a') != []):
                 print("calling likePeople")
                 self.likePeople()
+            else:
+                print("in loop")
+                self.handleFirstMessage()
 
 
 
